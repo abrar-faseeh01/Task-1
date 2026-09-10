@@ -1,7 +1,8 @@
 Absolutely. Copy-paste **everything below** directly into your root `README.md`:
 
 ````md
-# Task-1 6Sense
+# Week-1_6Sense
+
 
 Developer Community project built during the 6Sense Agentic Software Engineer internship.
 
