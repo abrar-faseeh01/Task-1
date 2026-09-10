@@ -15,8 +15,8 @@ Developer Community project built during the 6Sense Agentic Software Engineer in
 ### 1. Clone the Repository
 
 ```bash
-git clone git@github.com:abrar-faseeh01/Task-1.git
-cd Task-1
+git clone git@github.com:abrar-faseeh01/Week-1_6Sense.git
+cd Week-1_6Sense
 ```
 ````
 
