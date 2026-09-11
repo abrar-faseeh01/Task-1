@@ -31,6 +31,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!user) {
       throw new UnauthorizedException();
     }
-    return { userId: payload.sub, email: payload.email, role: payload.role };
+    // email/role read from DB, not the token — stays correct even if a stale
+    // token (pre-dating a credentials change) is still floating around.
+    return { userId: payload.sub, email: user.email, role: user.role };
   }
 }
