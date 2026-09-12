@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { InjectConnection } from '@nestjs/mongoose';
 import { Connection } from 'mongoose';
 
@@ -12,12 +12,12 @@ export class HealthService {
   check() {
     const databaseConnected = this.connection.readyState === 1;
 
-    return {
-      success: databaseConnected,
-      data: {
-        api: 'ok',
-        database: databaseConnected ? 'connected' : 'disconnected',
-      },
-    };
+    // Let the global filter/interceptor build the envelope — a disconnected
+    // DB is a real error (503), not a 200 with success:false.
+    if (!databaseConnected) {
+      throw new ServiceUnavailableException('Database not connected');
+    }
+
+    return { api: 'ok', database: 'connected' };
   }
 }

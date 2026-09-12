@@ -9,9 +9,14 @@ export default async function Home() {
     <main>
       <h1>Developer Community</h1>
 
-      <p>API: {health.data.api}</p>
-
-      <p>Database: {health.data.database}</p>
+      {health.success ? (
+        <>
+          <p>API: {health.data.api}</p>
+          <p>Database: {health.data.database}</p>
+        </>
+      ) : (
+        <p>API: {health.message ?? "unreachable"}</p>
+      )}
     </main>
   );
 }

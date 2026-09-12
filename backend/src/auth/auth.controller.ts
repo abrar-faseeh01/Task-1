@@ -9,10 +9,10 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { Response } from 'express';
+import ms from 'ms';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { Public } from './decorators/public.decorator';
-import { Roles } from './decorators/roles.decorator';
 import { LoginDto } from './dto/login.dto';
 import { SignupDto } from './dto/signup.dto';
 import { UpdateCredentialsDto } from './dto/update-credentials.dto';
@@ -23,6 +23,14 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly config: ConfigService,
   ) {}
+
+  // Derived from JWT_EXPIRES_IN so the cookie can never outlive (or expire
+  // before) the token it carries, even if the env var changes.
+  private getAccessTokenCookieMaxAge(): number {
+    const expiresIn = this.config.get<string>('JWT_EXPIRES_IN', '2h');
+    const parsed = ms(expiresIn as ms.StringValue);
+    return parsed ?? ms('2h' as ms.StringValue);
+  }
 
   @Public()
   @Post('signup')
@@ -45,12 +53,16 @@ export class AuthController {
       httpOnly: true,
       sameSite: 'lax',
       secure: false, // local http://localhost — production needs secure:true + sameSite:'none' + HTTPS
-      maxAge: 2 * 60 * 60 * 1000, // 2h, matches JWT_EXPIRES_IN
+      maxAge: this.getAccessTokenCookieMaxAge(),
     });
 
     return { email: user.email, role: user.role };
   }
 
+  // Public: clearing a cookie must not require a still-valid one — an
+  // expired/tampered/missing token would otherwise 401 before this runs
+  // and the client could never log itself out.
+  @Public()
   @Post('logout')
   @HttpCode(200)
   logout(@Res({ passthrough: true }) res: Response) {
@@ -77,16 +89,9 @@ export class AuthController {
       httpOnly: true,
       sameSite: 'lax',
       secure: false,
-      maxAge: 2 * 60 * 60 * 1000,
+      maxAge: this.getAccessTokenCookieMaxAge(),
     });
 
     return { email: updated.email, role: updated.role };
-  }
-
-  // Temporary route to test role-based authorization
-  @Roles('admin')
-  @Get('admin-check')
-  adminCheck() {
-    return 'you are admin';
   }
 }

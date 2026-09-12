@@ -24,8 +24,10 @@ export default function SettingsPage() {
       setCurrentPassword("");
       setNewEmail("");
       setNewPassword("");
-    } catch {
-      setError("Current password is incorrect.");
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to update account.",
+      );
     }
   }
 

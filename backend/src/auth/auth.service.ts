@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import mongoose from 'mongoose';
 import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
 import { SignupDto } from './dto/signup.dto';
@@ -95,7 +96,19 @@ export class AuthService {
       user.passwordHash = await bcrypt.hash(dto.newPassword, SALT_ROUNDS);
     }
 
-    await user.save();
+    try {
+      await user.save();
+    } catch (err) {
+      // optimisticConcurrency (schema) rejects a save based on a stale read —
+      // another update landed in between. Fail loudly instead of silently
+      // overwriting it.
+      if (err instanceof mongoose.Error.VersionError) {
+        throw new ConflictException(
+          'Credentials were updated concurrently — please retry.',
+        );
+      }
+      throw err;
+    }
 
     // Create a fresh JWT containing the updated email and existing role.
     const payload = {

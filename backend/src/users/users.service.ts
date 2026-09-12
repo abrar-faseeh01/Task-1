@@ -37,8 +37,4 @@ export class UsersService {
       role: data.role ?? 'user',
     });
   }
-
-  countAdmins() {
-    return this.userModel.countDocuments({ role: 'admin' }).exec();
-  }
 }

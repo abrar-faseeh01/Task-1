@@ -3,7 +3,9 @@ import { Document } from 'mongoose';
 
 export type UserRole = 'admin' | 'user';
 
-@Schema({ timestamps: true })
+// optimisticConcurrency: a `.save()` on a stale copy of the document fails
+// instead of silently overwriting concurrent changes (see AuthService.updateCredentials).
+@Schema({ timestamps: true, optimisticConcurrency: true })
 export class User extends Document {
   @Prop({
     required: true,

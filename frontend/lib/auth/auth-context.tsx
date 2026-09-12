@@ -32,17 +32,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User>(null);
   const [loading, setLoading] = useState(true);
 
-  async function refetchMe() {
-    try {
-      const res = await apiFetch("/auth/me");
-      setUser(res.data);
-    } catch {
-      setUser(null);
-    }
-  }
-
   useEffect(() => {
-    refetchMe().finally(() => setLoading(false));
+    let cancelled = false;
+
+    async function refetchMe() {
+      let nextUser: User = null;
+      try {
+        const res = await apiFetch("/auth/me");
+        nextUser = res.data;
+      } catch {
+        nextUser = null;
+      }
+      if (cancelled) return;
+      setUser(nextUser);
+      setLoading(false);
+    }
+
+    refetchMe();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   async function login(email: string, password: string) {
@@ -62,9 +72,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function logout() {
-    await apiFetch("/auth/logout", { method: "POST" });
-    setUser(null);
-    router.push("/login");
+    try {
+      await apiFetch("/auth/logout", { method: "POST" });
+    } finally {
+      // Always clear local session state and redirect, even if the
+      // request itself failed (e.g. network error) — logging out must
+      // never leave the UI stuck in a "logged in" state.
+      setUser(null);
+      router.push("/login");
+    }
   }
 
   async function updateCredentials(
