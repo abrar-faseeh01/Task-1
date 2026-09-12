@@ -1,7 +1,7 @@
 Absolutely. Copy-paste **everything below** directly into your root `README.md`:
 
 ````md
-# Week-1_6Sense
+# Dev-Community
 
 Developer Community project built during the 6Sense Agentic Software Engineer internship.
 
@@ -15,8 +15,8 @@ Developer Community project built during the 6Sense Agentic Software Engineer in
 ### 1. Clone the Repository
 
 ```bash
-git clone git@github.com:abrar-faseeh01/Week-1_6Sense.git
-cd Week-1_6Sense
+git clone git@github.com:abrar-faseeh01/Dev-Community.git
+cd Dev-Community
 ```
 ````
 
