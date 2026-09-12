@@ -1,5 +1,6 @@
 "use client";
 import { useAuth } from "@/lib/auth/auth-context";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -22,32 +23,71 @@ export default function SignupPage() {
   }
 
   return (
-    <form
-      onSubmit={onSubmit}
-      className="max-w-sm mx-auto mt-10 flex flex-col gap-3"
-    >
-      <h1 className="text-xl font-bold">Sign up</h1>
-      {error && <p className="text-red-600 text-sm">{error}</p>}
-      <input
-        type="email"
-        required
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="border p-2 rounded"
-      />
-      <input
-        type="password"
-        required
-        minLength={8}
-        placeholder="Password (min 8 chars)"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="border p-2 rounded"
-      />
-      <button type="submit" className="bg-black text-white p-2 rounded">
-        Sign up
-      </button>
-    </form>
+    <main className="flex flex-1 items-center justify-center px-4 py-12 sm:py-20">
+      <div className="w-full max-w-md">
+        <div className="mb-6 text-center">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+            Join the community
+          </h1>
+          <p className="mt-2 text-sm text-muted">
+            Create an account and start connecting with developers.
+          </p>
+        </div>
+
+        <div className="rounded-xl border border-border bg-surface shadow-sm">
+          <form onSubmit={onSubmit} className="flex flex-col gap-5 p-6 sm:p-8">
+            {error && (
+              <p
+                role="alert"
+                className="rounded-lg border border-red-200 bg-red-50 px-3.5 py-3 text-sm text-red-700"
+              >
+                {error}
+              </p>
+            )}
+
+            <label className="flex flex-col gap-2 text-sm font-medium">
+              <span>Email</span>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="h-11 rounded-lg border border-border bg-surface px-3.5 text-sm text-foreground outline-none transition-shadow focus:border-accent focus:ring-2 focus:ring-accent/15"
+              />
+            </label>
+
+            <label className="flex flex-col gap-2 text-sm font-medium">
+              <span>Password</span>
+              <input
+                type="password"
+                required
+                minLength={8}
+                placeholder="Minimum 8 characters"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="h-11 rounded-lg border border-border bg-surface px-3.5 text-sm text-foreground outline-none transition-shadow placeholder:text-gray-400 focus:border-accent focus:ring-2 focus:ring-accent/15"
+              />
+            </label>
+
+            <button
+              type="submit"
+              className="h-11 rounded-lg bg-accent px-4 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent/90 focus:outline-none focus:ring-2 focus:ring-accent/30"
+            >
+              Create account
+            </button>
+
+            <p className="border-t border-border pt-5 text-center text-sm text-muted">
+              Already have an account?{" "}
+              <Link
+                href="/login"
+                className="font-medium text-accent hover:underline"
+              >
+                Log in
+              </Link>
+            </p>
+          </form>
+        </div>
+      </div>
+    </main>
   );
 }

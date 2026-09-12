@@ -1,4 +1,6 @@
 "use client";
+
+import { useRouter } from "next/navigation";
 import {
   createContext,
   ReactNode,
@@ -9,17 +11,24 @@ import {
 import { apiFetch } from "../api-client";
 
 type User = { email: string; role: "admin" | "user" } | null;
+
 type AuthContextType = {
   user: User;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateCredentials: (
+    currentPassword: string,
+    newEmail?: string,
+    newPassword?: string,
+  ) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const router = useRouter();
   const [user, setUser] = useState<User>(null);
   const [loading, setLoading] = useState(true);
 
@@ -55,10 +64,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   async function logout() {
     await apiFetch("/auth/logout", { method: "POST" });
     setUser(null);
+    router.push("/login");
+  }
+
+  async function updateCredentials(
+    currentPassword: string,
+    newEmail?: string,
+    newPassword?: string,
+  ) {
+    const res = await apiFetch("/auth/me", {
+      method: "PATCH",
+      body: JSON.stringify({
+        currentPassword,
+        newEmail,
+        newPassword,
+      }),
+    });
+
+    setUser(res.data);
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, signup, logout }}>
+    <AuthContext.Provider
+      value={{ user, loading, login, signup, logout, updateCredentials }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -66,6 +95,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
+
+  if (!ctx) {
+    throw new Error("useAuth must be used within AuthProvider");
+  }
+
   return ctx;
 }

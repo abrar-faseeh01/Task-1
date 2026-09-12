@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const PROTECTED_PATHS = ["/dashboard"]; // add more protected routes here as you build them
+const PROTECTED_PATHS = ["/dashboard", "/settings"]; // add more protected routes here as you build them
 
 export function middleware(req: NextRequest) {
   const isProtected = PROTECTED_PATHS.some((p) =>
@@ -17,4 +17,6 @@ export function middleware(req: NextRequest) {
   return NextResponse.next();
 }
 
-export const config = { matcher: ["/dashboard/:path*"] };
+export const config = {
+  matcher: ["/dashboard/:path*", "/settings/:path*"],
+};
