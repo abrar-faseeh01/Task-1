@@ -29,7 +29,7 @@ export class AuthController {
   @HttpCode(201)
   async signup(@Body() dto: SignupDto) {
     const user = await this.authService.signup(dto);
-    return { success: true, data: { email: user.email, role: user.role } };
+    return { email: user.email, role: user.role };
   }
 
   @Public()
@@ -48,19 +48,19 @@ export class AuthController {
       maxAge: 2 * 60 * 60 * 1000, // 2h, matches JWT_EXPIRES_IN
     });
 
-    return { success: true, data: { email: user.email, role: user.role } };
+    return { email: user.email, role: user.role };
   }
 
   @Post('logout')
   @HttpCode(200)
   logout(@Res({ passthrough: true }) res: Response) {
     res.clearCookie('access_token');
-    return { success: true, data: null };
+    return null; // ResponseInterceptor wraps this as { success: true, data: null }
   }
 
   @Get('me')
   me(@CurrentUser() user: { userId: string; email: string; role: string }) {
-    return { success: true, data: { email: user.email, role: user.role } };
+    return { email: user.email, role: user.role };
   }
 
   @Patch('me')
@@ -80,16 +80,13 @@ export class AuthController {
       maxAge: 2 * 60 * 60 * 1000,
     });
 
-    return {
-      success: true,
-      data: { email: updated.email, role: updated.role },
-    };
+    return { email: updated.email, role: updated.role };
   }
 
   // Temporary route to test role-based authorization
   @Roles('admin')
   @Get('admin-check')
   adminCheck() {
-    return { success: true, data: 'you are admin' };
+    return 'you are admin';
   }
 }

@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -73,6 +74,11 @@ export class AuthService {
 
     if (!dto.newEmail && !dto.newPassword) {
       throw new BadRequestException('Provide newEmail and/or newPassword');
+    }
+
+    // Only admins may change their email — regular users can only change their password.
+    if (dto.newEmail && user.role !== 'admin') {
+      throw new ForbiddenException('Only admins can change their email');
     }
 
     if (dto.newEmail && dto.newEmail.toLowerCase() !== user.email) {
