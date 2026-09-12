@@ -1,5 +1,6 @@
 "use client";
 import { useAuth } from "@/lib/auth/auth-context";
+import { PasswordInput } from "@/components/ui/password-input";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -7,6 +8,7 @@ import { useState } from "react";
 export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const { signup } = useAuth();
   const router = useRouter();
@@ -14,6 +16,10 @@ export default function SignupPage() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
     try {
       await signup(email, password);
       router.push("/");
@@ -58,14 +64,23 @@ export default function SignupPage() {
 
             <label className="flex flex-col gap-2 text-sm font-medium">
               <span>Password</span>
-              <input
-                type="password"
+              <PasswordInput
                 required
                 minLength={8}
                 placeholder="Minimum 8 characters"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="h-11 rounded-lg border border-border bg-surface px-3.5 text-sm text-foreground outline-none transition-shadow placeholder:text-gray-400 focus:border-accent focus:ring-2 focus:ring-accent/15"
+              />
+            </label>
+
+            <label className="flex flex-col gap-2 text-sm font-medium">
+              <span>Confirm password</span>
+              <PasswordInput
+                required
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="h-11 rounded-lg border border-border bg-surface px-3.5 text-sm text-foreground outline-none transition-shadow focus:border-accent focus:ring-2 focus:ring-accent/15"
               />
             </label>
 

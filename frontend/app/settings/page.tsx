@@ -1,5 +1,6 @@
 "use client";
 import { useAuth } from "@/lib/auth/auth-context";
+import { PasswordInput } from "@/components/ui/password-input";
 import { useState } from "react";
 
 export default function SettingsPage() {
@@ -70,8 +71,7 @@ export default function SettingsPage() {
 
             <label className="flex flex-col gap-2 text-sm font-medium">
               <span>Current password</span>
-              <input
-                type="password"
+              <PasswordInput
                 required
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
@@ -99,8 +99,7 @@ export default function SettingsPage() {
                   Leave blank if you only want to change your email.
                 </span>
               )}
-              <input
-                type="password"
+              <PasswordInput
                 minLength={8}
                 placeholder="Minimum 8 characters"
                 value={newPassword}

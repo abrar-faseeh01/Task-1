@@ -1,5 +1,6 @@
 "use client";
 import { useAuth } from "@/lib/auth/auth-context";
+import { PasswordInput } from "@/components/ui/password-input";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -58,8 +59,7 @@ export default function LoginPage() {
 
             <label className="flex flex-col gap-2 text-sm font-medium">
               <span>Password</span>
-              <input
-                type="password"
+              <PasswordInput
                 required
                 minLength={8}
                 value={password}
