@@ -70,7 +70,11 @@ export class AuthService {
     );
 
     if (!isMatch) {
-      throw new UnauthorizedException('Current password is incorrect');
+      // A wrong password here is a validation failure, not a dead session —
+      // 400, not 401, so it never gets swept up by the frontend's
+      // redirect-on-401 interceptor (which exists precisely to catch a
+      // real invalid/expired session, not this).
+      throw new BadRequestException('Current password is incorrect');
     }
 
     if (!dto.newEmail && !dto.newPassword) {
